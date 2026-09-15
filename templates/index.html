@@ -1,35 +1,32 @@
 {% extends "base.html" %}
 {% block content %}
-<h1 class="visually-hidden">{{ config.title }}, {{ config.description | lower }}</h1>
+<h1 class="visually-hidden">{{ config.title }}, {{ config.description }}</h1>
 {% if section.pages %}
 {% set all_tags = get_taxonomy(kind="tags") %}
 {% set cats = get_taxonomy(kind="category") %}
 {% set labels = config.extra.categories %}
 {% set_global unclassified = [] %}
 {% for page in section.pages %}{% if not page.taxonomies.category %}{% set_global unclassified = [...unclassified, page] %}{% endif %}{% endfor %}
+{% set_global annees = [] %}
+{% for page in section.pages %}{% if page.year and page.year not in annees %}{% set_global annees = [...annees, page.year] %}{% endif %}{% endfor %}
+{% set annees = annees | sort | reverse %}
 {% set heading_level = 2 %}
-<ul class="grille" id="grille" role="list">
-  {% for page in section.pages %}{% include "signet.html" %}{% endfor %}
-</ul>
-<p class="vide" id="vide" hidden>
-  Aucun signet ne correspond à cette recherche.
-  <button type="button" id="reinitialiser">Tout réafficher</button>.
-</p>
 <div class="barre" role="search">
-  {% if all_tags.items %}
-  <div class="container" data-width="content" id="filtres-tags" hidden>
-    <div class="filtres-tags" role="group" aria-label="Filtrer par étiquette">
-      {% for term in all_tags.items %}<button
-        type="button"
-        data-tag="{{ term.slug }}"
-        aria-pressed="false"
-      >
-        {{ term.name }}</button
-      >{% endfor %}
-    </div>
-  </div>
-  {% endif %}
-  <div class="barre-rangee container" data-width="content">
+  <div class="barre-rangee">
+    <label class="recherche-champ" for="recherche">
+      <span class="visually-hidden">Rechercher dans les signets</span>
+      <input
+        type="search"
+        id="recherche"
+        name="recherche"
+        placeholder="Rechercher un signet…"
+        autocomplete="off"
+      />
+      <kbd aria-hidden="true">/</kbd>
+    </label>
+    <details class="explorer" id="explorer">
+      <summary>Filtres<span id="filtres-count"></span></summary>
+      <div class="explorer-contenu">
     <div class="filtres-cats" role="group" aria-label="Filtrer par catégorie">
       <button type="button" data-cat="" aria-pressed="true">Tout</button>
       {% for term in cats.items %}{% set label = labels[term.slug] | default(value=term.name) %}<button type="button" data-cat="{{ term.slug }}" aria-pressed="false">{{ label }}</button>{% endfor %}
@@ -47,23 +44,63 @@
         >{{ all_tags.items | length }}</span
       ></button
     >{% endif %}
-    <label class="recherche-champ" for="recherche">
-      <span class="visually-hidden">Rechercher dans les signets</span>
-      <input
-        type="search"
-        id="recherche"
-        name="recherche"
-        placeholder="Rechercher un signet…"
-        autocomplete="off"
-      />
-    </label>
-    <p class="statut" id="statut" aria-live="polite">{{ section.pages | length }} signets</p>
-    <div class="vues" role="group" aria-label="Affichage">
-      <button type="button" data-vue="dossiers" aria-pressed="true">Dossiers</button>
-      <button type="button" data-vue="liste" aria-pressed="false">Liste</button>
+  {% if all_tags.items %}
+  {# Étiquettes par groupe (config.extra.tag_groups), triées par usage, les rares (< 3 signets) repliées. #}
+  {% set par_usage = all_tags.items | sort(attribute="page_count") | reverse %}
+  {% set_global places = [] %}
+  <div id="filtres-tags" hidden>
+    <div class="filtres-tags" role="group" aria-label="Filtrer par étiquette">
+      {% for groupe in config.extra.tag_groups | default(value=[]) %}{% set nom = groupe.nom %}{% set liste = groupe.tags %}
+        {% set_global tri = [] %}
+        {% for term in par_usage %}{% if term.slug in liste %}{% set_global tri = [...tri, term] %}{% set_global places = [...places, term.slug] %}{% endif %}{% endfor %}
+        {% if tri %}{% include "tags_groupe.html" %}{% endif %}
+      {% endfor %}
+      {% set_global tri = [] %}
+      {% for term in par_usage %}{% if term.slug not in places %}{% set_global tri = [...tri, term] %}{% endif %}{% endfor %}
+      {% if tri %}{% set nom = "Autres" %}{% include "tags_groupe.html" %}{% endif %}
     </div>
   </div>
+  {% endif %}
+      </div>
+    </details>
+    <details class="reglages" id="reglages">
+      <summary>Options</summary>
+      <div class="reglages-contenu">
+        <div class="reglage"><span>Affichage</span><div class="vues" role="group" aria-label="Affichage">
+          <button type="button" data-vue="dossiers" aria-pressed="true">Dossiers</button>
+          <button type="button" data-vue="liste" aria-pressed="false">Liste</button>
+        </div></div>
+        <div class="reglage"><span>Taille des fiches</span><div class="outils" role="group" aria-label="Taille des fiches">
+          <button type="button" data-zoom="-1" aria-label="Réduire les fiches">−</button>
+          <output id="zoom-valeur" aria-live="polite">100 %</output>
+          <button type="button" data-zoom="1" aria-label="Agrandir les fiches">+</button>
+        </div></div>
+        <div class="reglage"><span>Couleurs</span><button type="button" id="nb" class="nb" aria-pressed="false"><span aria-hidden="true"></span>Noir et blanc</button></div>
+        <div class="reglage reglage-annees"><span>Filtrer par année</span><nav class="frise" aria-label="Filtrer par année">
+          {% for a in annees %}<button type="button" data-annee="{{ a }}" aria-pressed="false">{{ a }}</button>{% endfor %}
+        </nav></div>
+      </div>
+    </details>
+    <button type="button" id="hasard" class="de"><svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><rect x="2" y="2" width="20" height="20" rx="4" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="8" cy="8" r="1.8" fill="currentColor"/><circle cx="16" cy="8" r="1.8" fill="currentColor"/><circle cx="12" cy="12" r="1.8" fill="currentColor"/><circle cx="8" cy="16" r="1.8" fill="currentColor"/><circle cx="16" cy="16" r="1.8" fill="currentColor"/></svg><span>Piocher</span></button>
+    <p class="statut" id="statut" aria-live="polite">{{ section.pages | length }} signets</p>
+  </div>
+  <div class="filtres-actifs" id="filtres-actifs" hidden>
+    <p id="filtres-resume"></p><button type="button" id="effacer">Tout effacer</button>
+  </div>
 </div>
+
+<dialog class="volet" id="volet" aria-labelledby="volet-titre">
+  <button type="button" class="volet-fermer" id="volet-fermer" aria-label="Fermer" autofocus>Fermer</button>
+  <div class="volet-contenu" id="volet-contenu"></div>
+</dialog>
+
+<ul class="grille" id="grille" role="list">
+  {% for page in section.pages %}{% include "signet.html" %}{% endfor %}
+</ul>
+<p class="vide" id="vide" hidden>
+  Rien ne correspond à ces filtres.
+  <button type="button" id="reinitialiser">Tout réafficher</button>
+</p>
 
 <script type="module">
   const champ = document.getElementById("recherche");
@@ -75,9 +112,234 @@
   const etiqPanel = document.getElementById("filtres-tags");
   const boutonsCat = document.querySelectorAll("[data-cat]");
   const boutonsTag = document.querySelectorAll("[data-tag]");
+  const compteurs = new Map([...boutonsTag].map((b) => [b.dataset.tag, b.querySelector(".n")]));
   const fiches = document.querySelectorAll("#grille .fiche");
   const grille = document.getElementById("grille");
   const boutonsVue = document.querySelectorAll("[data-vue]");
+  new ResizeObserver(([e]) =>
+    document.documentElement.style.setProperty("--barre-h", `${e.contentRect.height}px`)
+  ).observe(document.querySelector(".barre"));
+  const explorer = document.getElementById("explorer");
+  const reglages = document.getElementById("reglages");
+  const large = matchMedia("(min-width: 75rem)");
+  function adapterDock() { explorer.open = large.matches; reglages.open = false; }
+  large.addEventListener("change", adapterDock);
+  adapterDock();
+  for (const panneau of [explorer, reglages]) panneau.addEventListener("toggle", () => {
+    if (panneau.open && !large.matches) (panneau === explorer ? reglages : explorer).open = false;
+  });
+  document.addEventListener("click", (e) => {
+    if (e.target.closest(".barre")) return;
+    reglages.open = false;
+    if (!large.matches) explorer.open = false;
+  });
+  const boutonsAnnee = document.querySelectorAll(".frise [data-annee]");
+
+  // Le zoom des fiches laisse intact le zoom du navigateur.
+  const paliers = [0.4, 0.55, 0.7, 0.85, 1, 1.2, 1.4];
+  let zoom = 1;
+  function majZoom(z, ancre = window.innerHeight / 2) {
+    const avant = (window.scrollY + ancre) / zoom;
+    zoom = z;
+    grille.style.setProperty("--zoom", z);
+    grille.toggleAttribute("data-dense", z < 0.7);
+    majBoutonsZoom();
+    window.scrollTo(0, avant * z - ancre);
+    try { localStorage.setItem("zoom", z); } catch {}
+  }
+  function pasZoom(sens) {
+    const i = paliers.indexOf(zoom) + sens;
+    if (paliers[i]) majZoom(paliers[i]);
+  }
+  function majBoutonsZoom() {
+    document.getElementById("zoom-valeur").textContent = `${Math.round(zoom * 100)} %`;
+    for (const b of document.querySelectorAll("[data-zoom]"))
+      b.disabled = !paliers[paliers.indexOf(zoom) + +b.dataset.zoom];
+  }
+  for (const b of document.querySelectorAll("[data-zoom]"))
+    b.addEventListener("click", () => pasZoom(+b.dataset.zoom));
+  try { const z = +localStorage.getItem("zoom"); if (paliers.includes(z)) majZoom(z); } catch {}
+  majBoutonsZoom();
+
+  // Noir et blanc.
+  const nb = document.getElementById("nb");
+  function majNb(on) {
+    document.documentElement.toggleAttribute("data-nb", on);
+    nb.setAttribute("aria-pressed", String(on));
+    try { localStorage.setItem("nb", on ? "1" : ""); } catch {}
+  }
+  nb.addEventListener("click", () => majNb(!document.documentElement.hasAttribute("data-nb")));
+  try { if (localStorage.getItem("nb")) majNb(true); } catch {}
+
+  const volet = document.getElementById("volet");
+  const voletContenu = document.getElementById("volet-contenu");
+  const voletFermer = document.getElementById("volet-fermer");
+  let origine = null;
+  let chargement;
+  let tirage; // ouverture différée après un coup de dé
+  const mouvementReduit = matchMedia("(prefers-reduced-motion: reduce)");
+  function marquer(f, duree = 1400) {
+    for (const x of grille.querySelectorAll("[data-tire]")) x.removeAttribute("data-tire");
+    f.setAttribute("data-tire", "");
+    setTimeout(() => f.removeAttribute("data-tire"), duree);
+  }
+
+  async function ouvrir(href, pousser = true) {
+    clearTimeout(tirage);
+    chargement?.abort();
+    const requete = chargement = new AbortController();
+    const dejaOuvert = volet.open;
+    grille.querySelector("[data-ouvert]")?.removeAttribute("data-ouvert");
+    origine?.closest(".fiche")?.removeAttribute("data-tire");
+    origine?.closest(".fiche")?.setAttribute("data-ouvert", "");
+    const attente = document.createElement("article");
+    attente.className = "dossier";
+    const titre = document.createElement("h2");
+    titre.id = "volet-titre";
+    titre.className = "dossier-titre";
+    titre.textContent = origine?.textContent.trim() || "Signet";
+    const message = document.createElement("p");
+    message.setAttribute("role", "status");
+    message.textContent = "Ouverture du signet…";
+    attente.append(titre, message);
+    voletContenu.replaceChildren(attente);
+    voletContenu.setAttribute("aria-busy", "true");
+    if (!dejaOuvert) volet.showModal();
+    volet.scrollTop = 0;
+    voletFermer.focus({ preventScroll: true });
+    if (pousser) history[dejaOuvert ? "replaceState" : "pushState"]({ volet: href }, "", href);
+    try {
+      const response = await fetch(href, { signal: requete.signal });
+      if (!response.ok) throw new Error("Page indisponible");
+      const doc = new DOMParser().parseFromString(await response.text(), "text/html");
+      if (requete.signal.aborted) return;
+      const dossier = doc.getElementById("dossier");
+      if (!dossier) throw new Error("Signet indisponible");
+      const h1 = dossier.querySelector("h1");
+      const h2 = document.createElement("h2");
+      h2.className = h1.className;
+      h2.id = "volet-titre";
+      h2.append(...h1.childNodes);
+      h1.replaceWith(h2);
+      voletContenu.replaceChildren(dossier);
+    } catch (error) {
+      if (requete.signal.aborted) return;
+      message.textContent = "Ce signet n’a pas pu être chargé. Réessayez ou ouvrez sa page.";
+      message.setAttribute("role", "alert");
+      const retry = document.createElement("button");
+      retry.type = "button";
+      retry.className = "reessayer";
+      retry.textContent = "Réessayer";
+      retry.addEventListener("click", () => ouvrir(href, false));
+      const lien = document.createElement("a");
+      lien.href = href;
+      lien.textContent = "Ouvrir la page";
+      const actions = document.createElement("p");
+      actions.className = "erreur-actions";
+      actions.append(retry, lien);
+      attente.append(actions);
+    } finally {
+      if (!requete.signal.aborted) voletContenu.removeAttribute("aria-busy");
+    }
+  }
+  function fermer(revenir = true) {
+    clearTimeout(tirage);
+    chargement?.abort();
+    if (!volet.open) return;
+    volet.close();
+    // Le dossier refermé garde un liseré qui s'efface : on retrouve sa place même à la souris, sans anneau de focus.
+    const ouvert = grille.querySelector("[data-ouvert]");
+    ouvert?.removeAttribute("data-ouvert");
+    if (ouvert) marquer(ouvert);
+    if (revenir && history.state?.volet) history.back();
+    origine?.focus({ preventScroll: true });
+  }
+  // Étiquette ou dossier cliqués (fiche ou volet) : on filtre le tableau sur place, sans changer de page.
+  function filtrerDepuisLien(a) {
+    const m = a.pathname.match(/^\/(tags|category)\/([^/]+)\/?$/);
+    if (!m) return false;
+    if (m[1] === "tags") {
+      const b = document.querySelector(`.filtres-tags [data-tag="${m[2]}"]`);
+      if (b) { tagsActifs.clear(); for (const x of boutonsTag) x.setAttribute("aria-pressed", "false"); b.click(); }
+    } else {
+      catActif = m[2];
+      majCats();
+      appliquer();
+    }
+    return true;
+  }
+  document.addEventListener("click", (e) => {
+    if (e.metaKey || e.ctrlKey || e.shiftKey || e.button) return;
+    const a = e.target.closest("a");
+    if (a && a.matches(".fiche-titre a, .fiche-image, .voisins a")) {
+      e.preventDefault();
+      origine = [...fiches].map((f) => f.querySelector(".fiche-titre a")).find((lien) => lien.href === a.href) || a;
+      volet.toggleAttribute("data-clavier", e.detail === 0);
+      ouvrir(a.href);
+      return;
+    }
+    if (a && a.origin === location.origin && filtrerDepuisLien(a)) {
+      e.preventDefault();
+      fermer();
+      return;
+    }
+
+  });
+  voletFermer.addEventListener("click", () => fermer());
+  volet.addEventListener("cancel", (e) => { e.preventDefault(); fermer(); });
+  volet.addEventListener("click", (e) => {
+    if (e.target !== volet) return;
+    const r = volet.getBoundingClientRect();
+    if (e.clientX < r.left || e.clientX > r.right || e.clientY < r.top || e.clientY > r.bottom) fermer();
+  });
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape" && !volet.open) {
+      clearTimeout(tirage);
+      grille.querySelector("[data-ouvert]")?.removeAttribute("data-ouvert");
+      if (reglages.open) { reglages.open = false; reglages.querySelector("summary").focus(); }
+      else if (!large.matches && explorer.open) { explorer.open = false; explorer.querySelector("summary").focus(); }
+      else if (etiqPanel && !etiqPanel.hidden) { etiqPanel.hidden = true; etiqToggle.setAttribute("aria-expanded", "false"); etiqToggle.focus(); }
+      return;
+    }
+    if (e.key === "/" && !e.target.closest?.("input, textarea") && !volet.open) { e.preventDefault(); champ.focus(); champ.select(); return; }
+    if (!volet.open || !origine || e.target.closest?.("input")) return;
+    if (e.key !== "ArrowLeft" && e.key !== "ArrowRight") return;
+    const liens = [...fiches].filter((f) => !f.hidden).map((f) => f.querySelector(".fiche-titre a"));
+    const i = liens.indexOf(origine);
+    const suivant = liens[i + (e.key === "ArrowRight" ? 1 : -1)];
+    if (!suivant) return;
+    e.preventDefault();
+    origine = suivant;
+    suivant.closest(".fiche").scrollIntoView({ block: "center", behavior: "instant" });
+    volet.setAttribute("data-clavier", "");
+    ouvrir(suivant.href);
+  });
+  window.addEventListener("popstate", (e) => {
+    if (e.state?.volet) {
+      origine = [...fiches].map((f) => f.querySelector(".fiche-titre a")).find((a) => a.href === e.state.volet) || origine;
+      ouvrir(e.state.volet, false);
+    } else fermer(false);
+  });
+
+  // Un signet visible au hasard : on le montre d'abord (liseré, défilement), la feuille suit un demi-temps plus tard.
+  document.getElementById("hasard").addEventListener("click", (e) => {
+    clearTimeout(tirage);
+    const v = [...fiches].filter((f) => !f.hidden);
+    const f = v[Math.floor(Math.random() * v.length)];
+    if (!f) return;
+    if (!large.matches) explorer.open = false;
+    reglages.open = false;
+    f.scrollIntoView({ block: "center", behavior: mouvementReduit.matches ? "instant" : "smooth" });
+    origine = f.querySelector(".fiche-titre a");
+    origine.focus({ preventScroll: true });
+    grille.querySelector("[data-ouvert]")?.removeAttribute("data-ouvert");
+    f.setAttribute("data-ouvert", ""); // onglet encré tout de suite, sans fondu, la feuille suit
+    volet.toggleAttribute("data-clavier", e.detail === 0);
+    tirage = setTimeout(() => {
+      f.scrollIntoView({ block: "center", behavior: "instant" }); // au cas où le défilement doux n'a pas fini
+      ouvrir(origine.href);
+    }, mouvementReduit.matches ? 0 : 550);
+  });
 
   function majVue(vue) {
     grille.dataset.vue = vue;
@@ -90,6 +352,7 @@
 
   const nbTags = etiqCount?.textContent ?? "";
   let catActif = "";
+  let anneeActive = "";
   const tagsActifs = new Set();
 
   const normaliser = (s) =>
@@ -102,6 +365,7 @@
   function appliquer() {
     const q = mots(normaliser(champ.value));
     let visibles = 0;
+    const restants = new Map();
     for (const f of fiches) {
       const cats = mots(f.dataset.categorie);
       const tags = mots(f.dataset.tags);
@@ -110,9 +374,24 @@
         !catActif ||
         (catActif === "__sans" ? cats.length === 0 : cats.includes(catActif));
       const okTags = [...tagsActifs].every((t) => tags.includes(t));
+      const okAnnee = !anneeActive || f.dataset.annee === anneeActive;
       const okQ = q.every((mot) => texte.includes(mot));
-      f.hidden = !(okCat && okTags && okQ);
-      if (!f.hidden) visibles++;
+      f.hidden = !(okCat && okTags && okQ && okAnnee);
+      if (!f.hidden) {
+        visibles++;
+        for (const t of tags) restants.set(t, (restants.get(t) ?? 0) + 1);
+      }
+    }
+    // Rétrécit le panneau : une étiquette sans résultat combiné est désactivée (et masquée en CSS).
+    for (const b of boutonsTag) {
+      const n = restants.get(b.dataset.tag) ?? 0;
+      b.disabled = n === 0 && !tagsActifs.has(b.dataset.tag);
+      compteurs.get(b.dataset.tag).textContent = n;
+    }
+    for (const d of document.querySelectorAll(".tags-rares")) {
+      const n = d.querySelectorAll("button:not(:disabled)").length;
+      d.querySelector("summary").textContent = `+${n}`;
+      d.hidden = n === 0;
     }
     statut.textContent =
       visibles === 0
@@ -121,6 +400,16 @@
           ? "1 signet"
           : `${visibles} signets`;
     vide.hidden = visibles !== 0;
+    document.getElementById("hasard").disabled = visibles === 0;
+    const actifs = [
+      catActif && [...boutonsCat].find((b) => b.dataset.cat === catActif)?.textContent,
+      anneeActive,
+      ...tagsActifs,
+      champ.value.trim() && `« ${champ.value.trim()} »`
+    ].filter(Boolean);
+    document.getElementById("filtres-actifs").hidden = actifs.length === 0;
+    document.getElementById("filtres-resume").textContent = actifs.join(" / ");
+    document.getElementById("filtres-count").textContent = actifs.length ? ` (${actifs.length})` : "";
   }
 
   function majCats() {
@@ -134,6 +423,13 @@
   });
 
   champ.addEventListener("input", appliquer);
+
+  for (const b of boutonsAnnee)
+    b.addEventListener("click", () => {
+      anneeActive = b.dataset.annee === anneeActive ? "" : b.dataset.annee;
+      for (const x of boutonsAnnee) x.setAttribute("aria-pressed", String(x.dataset.annee === anneeActive));
+      appliquer();
+    });
 
   for (const b of boutonsCat)
     b.addEventListener("click", () => {
@@ -153,16 +449,20 @@
       appliquer();
     });
 
-  reset.addEventListener("click", () => {
+  function reinitialiser() {
     champ.value = "";
     catActif = "";
+    anneeActive = "";
     tagsActifs.clear();
     majCats();
+    for (const b of boutonsAnnee) b.setAttribute("aria-pressed", "false");
     for (const b of boutonsTag) b.setAttribute("aria-pressed", "false");
     if (etiqCount) etiqCount.textContent = nbTags;
     appliquer();
     champ.focus();
-  });
+  }
+  reset.addEventListener("click", reinitialiser);
+  document.getElementById("effacer").addEventListener("click", reinitialiser);
 </script>
 {% else %}
 <p>
