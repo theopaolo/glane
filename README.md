@@ -41,6 +41,21 @@ Les catégories et les pages de tags sont créées automatiquement à partir des
 - Tags courts, en minuscules, sans accents.
 - Lien vers une autre fiche : `[Pagefind](@/signets/pagefind.md)`, avec le nom lisible comme texte du lien. Zola vérifie que la cible existe.
 
+### Reprendre le design de Besace
+
+Le design se fait d'abord dans [Besace](https://github.com/theopaolo/besace), puis se recopie ici. Depuis ce dépôt, avec le clone de Besace à côté :
+
+```sh
+git pull --ff-only
+git --git-dir=../besace/.git archive main templates static/site.css static/fonts static/piloti DESIGN.md | tar -x
+```
+
+Cela copie seulement ces fichiers, sans les signets de Besace. Ensuite, à la main :
+
+- `config.toml` : reprendre le bloc `[extra]` (`categories`, `[[extra.tag_groups]]`), garder le titre et l'adresse de Glane.
+- `content/_index.md` et `content/signets/_index.md` : `sort_by = "date"`. Un signet sans `date` disparaît du tri, vérifier le nombre de pages au `zola build`.
+- `.pages.yml` : vérifier que le formulaire propose les mêmes champs.
+
 ### Site
 
 Le site est généré par [Zola](https://www.getzola.org/).
