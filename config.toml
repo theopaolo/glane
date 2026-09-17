@@ -1,5 +1,5 @@
 base_url = "https://glane.ludique.dev"
-title = "Glane"
+title = "Glanage"
 description = "Bibliothèque collective de signets"
 default_language = "fr"
 compile_sass = false
@@ -15,5 +15,57 @@ developpement = "Développement"
 design = "Design"
 ressources = "Ressources"
 francophone = "Francophone"
+
+# Grands dossiers de la vue d'accueil. Un signet peut apparaître dans plusieurs dossiers.
+[[extra.dossiers]]
+slug = "developpement"
+nom = "Développement web"
+tags = ["developpement", "javascript", "css", "web", "web-standards", "web-components", "site-statique", "markdown", "animation"]
+categories = ["developpement"]
+[[extra.dossiers]]
+slug = "design"
+nom = "Design et interfaces"
+tags = ["design", "interface", "ui", "design-system", "design-tokens", "dataviz", "illustration"]
+categories = ["design"]
+[[extra.dossiers]]
+slug = "accessibilite"
+nom = "Accessibilité et design inclusif"
+tags = ["accessibilite", "lisibilite", "typographie", "standards"]
+[[extra.dossiers]]
+slug = "backend"
+nom = "Back-end et langages"
+tags = ["php", "java", "backend", "api", "nodejs", "go", "linux", "terminal"]
+[[extra.dossiers]]
+slug = "qualite"
+nom = "Qualité, architecture et Git"
+tags = ["qualite-architecture", "architecture", "git", "conventions", "versionnement"]
+[[extra.dossiers]]
+slug = "ecoconception"
+nom = "Éco-conception et hébergement"
+tags = ["eco-conception", "auto-hebergement"]
+[[extra.dossiers]]
+slug = "securite"
+nom = "Cybersécurité"
+tags = ["cybersecurite"]
+[[extra.dossiers]]
+slug = "ia"
+nom = "Intelligence artificielle"
+tags = ["ia"]
+[[extra.dossiers]]
+slug = "libre"
+nom = "Open source et communautés"
+tags = ["open-source", "collaboration", "communaute"]
+[[extra.dossiers]]
+slug = "femmes-tech"
+nom = "Femmes dans la tech"
+tags = ["femmes-tech"]
+[[extra.dossiers]]
+slug = "parcours"
+nom = "Personnalités, pédagogie et carrière"
+tags = ["personnalite", "pedagogie", "carriere"]
+[[extra.dossiers]]
+slug = "societe"
+nom = "Tech et société"
+tags = ["tech-societe", "actu-tech"]
 [markdown]
 external_links_target_blank = true

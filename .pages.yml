@@ -40,14 +40,18 @@ content:
             options:
               multiple: true
               values:
-                - { name: sobriete, label: Sobriété numérique et informatique conviviale }
-                - { name: cooperation, label: Coopération et outils de facilitation }
-                - { name: studios, label: Studios et références }
-                - { name: web-design, label: Web design et inspiration de sites }
-                - { name: fondamentaux, label: Fondamentaux du métier }
-                - { name: ludique, label: Web ludique et génératif }
-                - { name: ia, label: IA et outils RAG }
-                - { name: outils, label: Outils de dev et utilitaires }
+                - { name: developpement, label: Développement web }
+                - { name: design, label: Design et interfaces }
+                - { name: accessibilite, label: Accessibilité et design inclusif }
+                - { name: backend, label: Back-end et langages }
+                - { name: qualite, label: Qualité, architecture et Git }
+                - { name: ecoconception, label: Éco-conception et hébergement }
+                - { name: securite, label: Cybersécurité }
+                - { name: ia, label: Intelligence artificielle }
+                - { name: libre, label: Open source et communautés }
+                - { name: femmes-tech, label: Femmes dans la tech }
+                - { name: parcours, label: Personnalités, pédagogie et carrière }
+                - { name: societe, label: Tech et société }
       - name: taxonomies
         type: object
         label: Classement
@@ -57,22 +61,18 @@ content:
             type: select
             options:
               multiple: true
-              max: 1
               values:
-                - { name: design, label: Design }
                 - { name: developpement, label: Développement }
-                - { name: son, label: Son }
-                - { name: jeu, label: Jeu }
-                - { name: societe, label: Société }
+                - { name: design, label: Design }
                 - { name: ressources, label: Ressources }
+                - { name: francophone, label: Francophone }
           - name: tags
             label: Étiquettes
             type: select
-            description: "Courtes, en minuscules, sans accents. Une nouvelle étiquette s’ajoute à cette liste avec scripts/pages_tags.py."
+            description: "Courtes, en minuscules, sans accents."
             options:
               multiple: true
-              # étiquettes : scripts/pages_tags.py
-              values: [30s, a11y, agents, ai, api, app, appressource, art, articles, artist, aspireinspire, audio, avadonware, blog, book, cms, coding, collectif, coloque, colorful, computing, concept, contemporary, convivialite, cooperer, cours, couts, crazy-cool, creative-coding, design, dessin, digital, digitalgarden, directory, ecologie, edition, education, energie, expo, framework, francais, game-related, game-theory, genart, graphisme, home-cooked, hosting, illich, illustrator, index, inspiration, instrument, javascript, journal, json, json-editor, kirby, leaflet, library, limites, logiciel-convivial, logo, low-tech, magazine, malleable, mastodon, mcp, mediation, micro-saas, micro-tool, model-pour-lab, music, narration, net-art, neural-net, note-app, numerique-de-controle, photography, platform, playdate, podcast, portfolio, quality, research, ressourcefreelance, ressources, science, selfhosted, service, site-inspiration, situated-software, small-tech, smallweb, software, soundui, startup, studio, survival, tech, time-management, tutorial, typographie, unusual-ui, web, web-publication, web-toys, webgl, webradio, webtool, writing]
+              values: [accessibilite, actu-tech, animation, api, architecture, auto-hebergement, backend, blog, carriere, collaboration, communaute, conventions, css, cybersecurite, dataviz, design, design-system, design-tokens, developpement, eco-conception, femmes-tech, git, go, ia, illustration, interface, java, javascript, linux, lisibilite, live-coding, markdown, media, musique, newsletter, nodejs, open-source, pedagogie, personnalite, php, podcast, presentation, qualite-architecture, recherche, site-statique, standards, tech-societe, terminal, twitch, typographie, ui, versionnement, video, web, web-components, web-standards]
       - name: body
         label: Pourquoi conserver ce lien
         type: rich-text
