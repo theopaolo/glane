@@ -1,0 +1,45 @@
+name: vignette
+
+on:
+  workflow_dispatch:
+    inputs:
+      payload:
+        description: Pages CMS payload as JSON
+        required: true
+        type: string
+
+permissions:
+  contents: write
+  actions: write
+
+jobs:
+  vignette:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    env:
+      FICHE: ${{ fromJSON(inputs.payload).context.path }}
+      REF: ${{ fromJSON(inputs.payload).repository.ref }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ env.REF }}
+
+      - name: Récupérer la vignette
+        run: python3 scripts/fetch_images.py "$FICHE"
+
+      - name: Commit et republier
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        run: |
+          git add -- "$FICHE" content/images
+          git -c user.name=pages-cms \
+              -c user.email=pages-cms@users.noreply.github.com \
+              commit -m "vignette: $(basename "$FICHE" .md)"
+          git push
+
+          BRANCH="$(git branch --show-current)"
+          curl --fail-with-body -L -X POST \
+            -H "Accept: application/vnd.github+json" \
+            -H "Authorization: Bearer $GITHUB_TOKEN" \
+            "https://api.github.com/repos/$GITHUB_REPOSITORY/actions/workflows/pages.yml/dispatches" \
+            -d "$(jq -nc --arg ref "$BRANCH" '{ref: $ref}')"
