@@ -1,0 +1,49 @@
+name: proposition
+
+# Lancé par le formulaire /proposer/ via worker/index.js. Ouvre une pull request à relire.
+on:
+  workflow_dispatch:
+    inputs:
+      payload:
+        description: Signet proposé, en JSON
+        required: true
+        type: string
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  proposition:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Écrire la fiche
+        id: fiche
+        env:
+          PAYLOAD: ${{ inputs.payload }}
+        run: python3 scripts/proposer.py >> "$GITHUB_OUTPUT"
+
+      - name: Récupérer la vignette
+        continue-on-error: true
+        env:
+          FICHE: ${{ steps.fiche.outputs.fiche }}
+        run: python3 scripts/fetch_images.py "$FICHE"
+
+      - name: Ouvrir la pull request
+        env:
+          GH_TOKEN: ${{ github.token }}
+          FICHE: ${{ steps.fiche.outputs.fiche }}
+          TITRE: ${{ steps.fiche.outputs.titre }}
+        run: |
+          BRANCHE="proposition/$(basename "$FICHE" .md)"
+          git switch -c "$BRANCHE"
+          git add -- "$FICHE" content/images
+          git -c user.name=glane-formulaire \
+              -c user.email=glane-formulaire@users.noreply.github.com \
+              commit -m "Proposer $TITRE"
+          git push origin "$BRANCHE"
+          gh pr create --head "$BRANCHE" --title "Proposition : $TITRE" \
+            --body "Envoyé depuis le formulaire du site. Relire la fiche, la corriger au besoin, puis fusionner."

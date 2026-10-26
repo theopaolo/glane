@@ -1,0 +1,57 @@
+{% extends "base.html" %}
+{% block title %}{{ section.title }} · {{ config.title }}{% endblock %}
+{% block content %}
+<p class="retour-lien"><a href="{{ get_url(path="/") }}">← Tous les signets</a></p>
+<article class="dossier">
+  <h1 class="dossier-titre">{{ section.title }}</h1>
+  {# Le worker renvoie ici avec #merci ou #erreur, :target affiche le message. #}
+  <p class="postit envoi" id="merci">Merci, votre proposition est envoyée. Elle apparaîtra sur le site après relecture.</p>
+  <p class="postit envoi" id="erreur">L’envoi a échoué. Réessayez dans quelques minutes.</p>
+  {# worker/index.js lance le workflow proposition.yml, qui ouvre une pull request à relire. #}
+  <form class="formulaire flow" method="post" action="https://glane-proposition.ludique.workers.dev">
+    <p class="champ">
+      <label for="titre">Titre</label>
+      <input id="titre" name="titre" required maxlength="120">
+    </p>
+    <p class="champ">
+      <label for="url">Adresse</label>
+      <input id="url" name="url" type="url" required maxlength="500" pattern="https?://.+" placeholder="https://">
+    </p>
+    <fieldset class="champ">
+      <legend>Catégorie</legend>
+      {% for slug, nom in config.extra.categories %}{% if slug != "francophone" %}
+      <label><input type="radio" name="categorie" value="{{ slug }}" required> {{ nom }}</label>
+      {% endif %}{% endfor %}
+    </fieldset>
+    <p class="champ">
+      <label><input type="checkbox" name="francophone"> La ressource est en français</label>
+    </p>
+    <fieldset class="champ">
+      <legend>Étiquettes <span class="muted">(facultatif)</span></legend>
+      <div class="etiquettes-choix">
+        {% set tags = get_taxonomy(kind="tags") %}{% for terme in tags.items %}<label class="tag"><input type="checkbox" name="tags" value="{{ terme.slug }}">{{ terme.name }}</label>{% endfor %}
+      </div>
+    </fieldset>
+    <p class="champ">
+      <label for="description">Pourquoi garder ce lien ?</label>
+      <textarea id="description" name="description" required maxlength="2000" rows="5" aria-describedby="description-aide"></textarea>
+      <span class="muted" id="description-aide">Une ou deux phrases sur ce que propose la ressource. Le titre et l’adresse s’affichent déjà.</span>
+    </p>
+    <p class="visually-hidden" aria-hidden="true"><label>Laisser vide <input name="site" tabindex="-1" autocomplete="off"></label></p>
+    <p><button class="envoyer">Envoyer la proposition</button></p>
+    <p class="muted">La proposition est relue avant d’apparaître sur le site. Avec un compte GitHub, vous pouvez aussi passer par <a href="https://app.pagescms.org" target="_blank" rel="noopener">Pages CMS<span class="visually-hidden"> (nouvel onglet)</span></a>.</p>
+  </form>
+</article>
+{% set signets = get_section(path="signets/_index.md") %}{% set_global adresses = [] %}
+{% for p in signets.pages %}{% if p.extra.url %}{% set_global adresses = [...adresses, p.extra.url] %}{% endif %}{% endfor %}
+<script type="application/json" id="adresses">{{ adresses | json_encode | safe }}</script>
+<script type="module">
+  // Signale un lien déjà présent avant l'envoi.
+  const cle = (url) => url.trim().toLowerCase().replace(/^https?:\/\/(www\.)?/, "").replace(/\/+$/, "");
+  const connues = new Set(JSON.parse(document.getElementById("adresses").textContent).filter(Boolean).map(cle));
+  const champ = document.getElementById("url");
+  champ.addEventListener("input", () => {
+    champ.setCustomValidity(connues.has(cle(champ.value)) ? "Ce lien est déjà dans la bibliothèque." : "");
+  });
+</script>
+{% endblock %}

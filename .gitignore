@@ -7,3 +7,4 @@ static/processed_images/
 .sisyphus
 .impeccable
 PRODUCT.md
+worker/.wrangler/

@@ -1104,6 +1104,48 @@
     box-shadow: 0 1px 4px rgb(0 0 0 / 0.12);
   }
   .dossier-photo img { inline-size: 100%; block-size: auto; aspect-ratio: 8 / 5; object-fit: cover; }
+  /* Formulaire de proposition, sur la feuille de la fiche. Champs comme la recherche. */
+  .envoi:not(:target) { display: none; }
+  .formulaire { --flow-space: var(--space-m); }
+  .champ {
+    display: grid;
+    gap: var(--space-2xs);
+    justify-items: start;
+    margin-inline: 0;
+    padding: 0;
+    border: 0;
+  }
+  .champ label[for], .champ legend { padding: 0; font-weight: 600; }
+  .champ legend { margin-block-end: var(--space-2xs); }
+  .champ input:not([type="radio"], [type="checkbox"]), .champ textarea {
+    inline-size: 100%;
+    padding: var(--space-2xs) var(--space-s);
+    border: 1px solid var(--line);
+    background: var(--bg);
+    color: var(--fg);
+    font: inherit;
+    font-size: var(--step-1);
+    caret-color: var(--accent);
+  }
+  .champ input:focus, .champ textarea:focus { border-color: var(--accent); }
+  .champ input::placeholder { color: var(--muted); opacity: 1; }
+  .champ textarea { resize: vertical; }
+  .champ input { accent-color: var(--accent); }
+  .etiquettes-choix { display: flex; flex-wrap: wrap; gap: var(--space-3xs); }
+  .etiquettes-choix input { position: absolute; opacity: 0; }
+  .etiquettes-choix label:has(:checked) { background: var(--accent); color: var(--accent-ink); font-weight: 600; }
+  .etiquettes-choix label:has(:focus-visible) { outline: 2px solid var(--accent); outline-offset: 2px; }
+  .envoyer {
+    padding: var(--space-2xs) var(--space-m);
+    border: 0;
+    background: var(--fg);
+    color: var(--bg);
+    font: inherit;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.15s;
+  }
+  .envoyer:hover { background: var(--accent); }
   /* Signets voisins : mini-dossiers, onglet avec glyphe et domaine, papier de la catégorie. */
   .voisins {
     list-style: none;

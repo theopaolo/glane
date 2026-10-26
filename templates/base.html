@@ -20,7 +20,7 @@
       <a href="{{ get_url(path="/") }}">{{ config.title }}</a>
       <span class="tagline">{{ config.description }}.</span>
     </span>
-    <a class="contribuer" href="https://app.pagescms.org" target="_blank" rel="noopener">Ajouter un signet<span class="visually-hidden"> avec Pages CMS (nouvel onglet)</span></a>
+    <a class="contribuer" href="{{ get_url(path="proposer", trailing_slash=true) }}">Ajouter un signet</a>
   </nav>
 </header>
 <main id="contenu" tabindex="-1" class="container flow" data-width="content">{% block content %}{% endblock %}</main>

@@ -557,6 +557,6 @@
 {% else %}
 <p>
   Aucun signet pour le moment.
-  <a href="https://app.pagescms.org">Ajouter le premier signet</a>.
+  <a href="{{ get_url(path="proposer", trailing_slash=true) }}">Ajouter le premier signet</a>.
 </p>
 {% endif %} {% endblock %}

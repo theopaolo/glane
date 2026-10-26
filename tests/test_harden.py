@@ -38,7 +38,7 @@ with tempfile.TemporaryDirectory(prefix="glane-harden-", dir="/tmp") as director
     assert '<h2 class="fiche-titre' in populated
     assert '<p class="fiche-onglet">' in populated
     assert "pastille" not in populated
-    assert 'href="https://app.pagescms.org"' in populated
+    assert 'href="https://glane.ludique.dev/proposer/"' in populated
     assert "Sans catégorie" in populated
     assert "missing 中文 مرحبا 👋" in populated
     assert "unsafe 中文 مرحبا 👋" in populated

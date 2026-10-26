@@ -8,7 +8,9 @@ Une partie des signets provient de la [veille tech d'Anaïs Sparesotto](https://
 
 ### Ajouter ou modifier un signet
 
-Ouvrez \[app.pagescms.org\](https://app.pagescms.org) dans votre navigateur. Connectez-vous avec votre compte GitHub. Choisissez le dépôt \*glane\*.
+**Sans compte :** remplissez le formulaire [glane.ludique.dev/proposer](https://glane.ludique.dev/proposer/). La proposition devient une pull request sur GitHub. Le signet apparaît sur le site une fois la pull request relue et fusionnée.
+
+**Avec un compte GitHub :** ouvrez \[app.pagescms.org\](https://app.pagescms.org) dans votre navigateur. Connectez-vous avec votre compte GitHub. Choisissez le dépôt \*glane\*.
 
 Le formulaire indique les champs obligatoires. Vos modifications sont sauvegardées directement dans le dépôt, et le site est mis à jour en moins d’une minute.
 
@@ -20,6 +22,19 @@ Le formulaire indique les champs obligatoires. Vos modifications sont sauvegard�
 4. Envoyez vos modifications sur la branche `main`.
 
 Les catégories et les pages de tags sont créées automatiquement à partir des métadonnées.
+
+### Formulaire de proposition
+
+Le formulaire `/proposer/` envoie ses champs à un Cloudflare Worker (`worker/index.js`). Le worker lance le workflow `proposition.yml`. Ce workflow écrit la fiche avec `scripts/proposer.py`, récupère la vignette et ouvre une pull request. Une adresse déjà présente dans `content/signets/` arrête le workflow sans pull request.
+
+Mise en place, une seule fois :
+
+1. Sur GitHub, créez un jeton à grain fin (Settings, Developer settings, Fine-grained tokens) limité au dépôt *glane*, avec la permission « Actions : Read and write ». Notez sa date d’expiration : à cette date, le formulaire affiche « L’envoi a échoué » jusqu’au remplacement du jeton.
+2. Dans `worker/`, lancez `npx wrangler deploy`, puis `npx wrangler secret put GITHUB_TOKEN` et collez le jeton.
+3. Recopiez l’adresse affichée par `wrangler deploy` dans l’attribut `action` du formulaire, dans `templates/proposer.html`.
+4. Dans les réglages du dépôt (Actions, General), cochez « Allow GitHub Actions to create and approve pull requests ».
+
+Un champ caché, `site`, écarte les robots les plus simples. Si des propositions indésirables arrivent quand même, ajoutez Cloudflare Turnstile au formulaire.
 
 ### Conventions
 
