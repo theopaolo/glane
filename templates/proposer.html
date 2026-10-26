@@ -37,6 +37,16 @@
       <textarea id="description" name="description" required maxlength="2000" rows="5" aria-describedby="description-aide"></textarea>
       <span class="muted" id="description-aide">Une ou deux phrases sur ce que propose la ressource. Le titre et l’adresse s’affichent déjà.</span>
     </p>
+    <fieldset class="champ" aria-describedby="par-aide">
+      <legend>Proposé par <span class="muted">(facultatif)</span></legend>
+      <span class="muted" id="par-aide">S’affiche sur la fiche du signet.</span>
+      {# Pas de name="site" : c’est le champ piège plus bas. #}
+      <div class="champ-groupe">
+        <label>Pseudo <input name="pseudo" maxlength="60" autocomplete="nickname"></label>
+        <label>Nom d’utilisateur GitHub <input name="github" maxlength="100" pattern="@?[A-Za-z0-9][A-Za-z0-9\-]*" placeholder="@"></label>
+        <label>Site personnel <input name="site_perso" type="url" maxlength="500" pattern="https?://.+" placeholder="https://"></label>
+      </div>
+    </fieldset>
     <p class="visually-hidden" aria-hidden="true"><label>Laisser vide <input name="site" tabindex="-1" autocomplete="off"></label></p>
     <p><button class="envoyer">Envoyer la proposition</button></p>
     <p class="muted">La proposition est relue avant d’apparaître sur le site. Avec un compte GitHub, vous pouvez aussi passer par <a href="https://app.pagescms.org" target="_blank" rel="noopener">Pages CMS<span class="visually-hidden"> (nouvel onglet)</span></a>.</p>

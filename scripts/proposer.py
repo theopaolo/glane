@@ -22,18 +22,30 @@ def cle(url):
     return re.sub(r"^https?://(www\.)?", "", url.strip().lower()).rstrip("/")
 
 
-def texte(payload, key, limit):
-    value = payload.get(key)
-    if not isinstance(value, str) or not value.strip() or len(value) > limit:
-        raise ValueError(f"{key}: required text, {limit} characters max")
+def texte(payload, key, limit, requis=True):
+    value = payload.get(key) or ""
+    if not isinstance(value, str) or len(value) > limit or (requis and not value.strip()):
+        raise ValueError(f"{key}: text, {limit} characters max")
     return value.strip()
+
+
+def adresse(value, key):
+    if value and not re.fullmatch(r"https?://[^\s\"'<>\\]+", value):
+        raise ValueError(f"{key}: expected an HTTP or HTTPS address")
+    return value
 
 
 def main(payload):
     titre = " ".join(texte(payload, "titre", 120).split())
-    url = texte(payload, "url", 500)
-    if not re.fullmatch(r"https?://[^\s\"'<>\\]+", url):
-        raise ValueError("url: expected an HTTP or HTTPS address")
+    url = adresse(texte(payload, "url", 500), "url")
+    par = {
+        "pseudo": " ".join(texte(payload, "pseudo", 60, requis=False).split()),
+        "github": re.sub(r"^(@|https?://github\.com/)", "", texte(payload, "github", 100, requis=False)).strip("/"),
+        "site": adresse(texte(payload, "site_perso", 500, requis=False), "site_perso"),
+    }
+    if par["github"] and not re.fullmatch(r"[A-Za-z0-9][A-Za-z0-9-]{0,38}", par["github"]):
+        raise ValueError("github: invalid username")
+    par = "".join(f"    {key}: {json.dumps(value, ensure_ascii=False)}\n" for key, value in par.items() if value)
     # Pas de HTML brut dans la fiche : Zola le rendrait tel quel.
     description = texte(payload, "description", 2000).replace("\r\n", "\n").replace("<", "&lt;")
     categorie = payload.get("categorie")
@@ -59,7 +71,8 @@ def main(payload):
         f"title: {json.dumps(titre, ensure_ascii=False)}\n"
         "extra:\n"
         f"  url: {json.dumps(url)}\n"
-        "taxonomies:\n"
+        + (f"  propose_par:\n{par}" if par else "")
+        + "taxonomies:\n"
         f"  category: [{', '.join(categories)}]\n"
         f"  tags: [{', '.join(map(json.dumps, tags))}]\n"
         "---\n\n"

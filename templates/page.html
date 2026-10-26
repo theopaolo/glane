@@ -26,6 +26,17 @@
     <dt>Source</dt><dd>{% if domaine %}<a class="lien-source" href="{{ url }}" target="_blank" rel="noopener">{{ domaine }}<span class="visually-hidden"> (site externe, nouvel onglet)</span></a>{% else %}<span class="muted">Lien indisponible.</span>{% endif %}</dd>
     {% if cat_slug %}<dt>Dossier</dt><dd><a href="{{ get_taxonomy_url(kind="category", name=cat_slug) }}">{{ labels[cat_slug] | default(value=cat_slug) }}</a></dd>{% endif %}
     {% if tags %}<dt>Étiquettes</dt><dd>{% for tag in tags %}<a class="tag" href="{{ get_taxonomy_url(kind="tags", name=tag) }}">{{ tag }}</a>{% endfor %}</dd>{% endif %}
+    {% set par = page.extra.propose_par | default(value=false) %}
+    {% if par %}
+    {% set site = par.site | default(value="") | trim %}{% set site_bas = site | lower %}
+    {% if not (site_bas is starting_with(pat="https://") or site_bas is starting_with(pat="http://")) %}{% set site = "" %}{% endif %}
+    {% if par.pseudo or par.github or site %}
+    <dt>Proposé par</dt><dd>
+      {% if par.pseudo %}<span>{{ par.pseudo }}</span>{% endif %}
+      {% if site %}<a href="{{ site }}" target="_blank" rel="noopener">{{ site | replace(from="https://", to="") | replace(from="http://", to="") | split(pat="/") | first }}<span class="visually-hidden"> (nouvel onglet)</span></a>{% endif %}
+      {% if par.github %}<a href="https://github.com/{{ par.github }}" target="_blank" rel="noopener">@{{ par.github }}<span class="visually-hidden"> sur GitHub (nouvel onglet)</span></a>{% endif %}
+    </dd>
+    {% endif %}{% endif %}
   </dl>
   {% if page.content | striptags | trim %}
   <h2 class="infos-titre">Description</h2>

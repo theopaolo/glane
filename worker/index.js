@@ -16,6 +16,9 @@ export default {
       francophone: form.has("francophone"),
       tags: form.getAll("tags"),
       description: form.get("description"),
+      pseudo: form.get("pseudo"),
+      github: form.get("github"),
+      site_perso: form.get("site_perso"),
     });
     const response = await fetch(DISPATCH, {
       method: "POST",

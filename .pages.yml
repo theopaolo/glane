@@ -33,6 +33,13 @@ content:
           - name: image
             label: Image (vignette)
             type: image
+          - name: propose_par
+            label: Proposé par
+            type: object
+            fields:
+              - { name: pseudo, label: Pseudo, type: string }
+              - { name: github, label: Nom d’utilisateur GitHub, type: string }
+              - { name: site, label: Site personnel, type: string }
           - name: dossiers
             label: Grands dossiers
             description: "En plus de ceux déduits des étiquettes (config.toml)."

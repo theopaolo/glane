@@ -27,8 +27,8 @@ with tempfile.TemporaryDirectory(prefix="glane-harden-", dir="/tmp") as director
 
     for name, fields in {
         "missing": "",
-        "unsafe": 'extra:\n  url: "javascript:alert(1)"\n',
-        "valid": 'extra:\n  url: "https://example.org/?a=1&b=2"\ntaxonomies:\n  category: [design]\n  tags: [developpement]\n',
+        "unsafe": 'extra:\n  url: "javascript:alert(1)"\n  propose_par:\n    site: "javascript:alert(1)"\n',
+        "valid": 'extra:\n  url: "https://example.org/?a=1&b=2"\n  propose_par:\n    github: "Lucille-R"\ntaxonomies:\n  category: [design]\n  tags: [developpement]\n',
     }.items():
         (site / f"content/signets/{name}.md").write_text(
             f'---\ntitle: "{name} 中文 مرحبا 👋"\n{fields}---\n\nTexte de la fiche.\n'
@@ -50,6 +50,8 @@ with tempfile.TemporaryDirectory(prefix="glane-harden-", dir="/tmp") as director
     assert "Lien indisponible." in (site / "public/signets/missing/index.html").read_text()
     valid = (site / "public/signets/valid/index.html").read_text()
     assert 'href="https://example.org/?a=1&amp;b=2"' in valid
+    assert 'href="https://github.com/Lucille-R"' in valid
+    assert "Proposé par" not in (site / "public/signets/unsafe/index.html").read_text()
     category = (site / "public/category/design/index.html").read_text()
     assert '<h2 class="fiche-titre' in category
     tags = (site / "public/tags/index.html").read_text()

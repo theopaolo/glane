@@ -1131,6 +1131,13 @@
   .champ input::placeholder { color: var(--muted); opacity: 1; }
   .champ textarea { resize: vertical; }
   .champ input { accent-color: var(--accent); }
+  .champ-groupe {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(12rem, 1fr));
+    gap: var(--space-s);
+    inline-size: 100%;
+  }
+  .champ-groupe label { display: grid; gap: var(--space-3xs); }
   .etiquettes-choix { display: flex; flex-wrap: wrap; gap: var(--space-3xs); }
   .etiquettes-choix input { position: absolute; opacity: 0; }
   .etiquettes-choix label:has(:checked) { background: var(--accent); color: var(--accent-ink); font-weight: 600; }
