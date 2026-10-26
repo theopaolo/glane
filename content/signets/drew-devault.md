@@ -1,10 +1,10 @@
 ---
-title: "Drew Devault"
+title: "Drew DeVault"
 extra:
   url: "https://drewdevault.com/"
 taxonomies:
-  category: [developpement]
-  tags: ["linux", "open-source"]
+  category: [blog]
+  tags: [open-source, linux, auto-hebergement, tech-societe, personnalite]
 ---
 
-Un blog sur l'open-source et linux
+Créateur de SourceHut. Billets sur la culture du logiciel libre, les infrastructures indépendantes et la programmation système.

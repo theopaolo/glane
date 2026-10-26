@@ -2,9 +2,9 @@
 title: "Cassidy Williams"
 extra:
   image: "/images/cassidy-williams.png"
-  url: "https://cassidoo.co/"
+  url: "https://cassidoo.co/blog/"
 taxonomies:
-  category: [developpement]
+  category: [blog]
   tags: [personnalite, femmes-tech, newsletter, javascript]
 ---
 

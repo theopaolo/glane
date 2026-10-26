@@ -72,6 +72,7 @@ content:
                 - { name: developpement, label: Développement }
                 - { name: design, label: Design }
                 - { name: ressources, label: Ressources }
+                - { name: blog, label: Blog }
                 - { name: francophone, label: Francophone }
           - name: tags
             label: Étiquettes
@@ -79,7 +80,7 @@ content:
             description: "Courtes, en minuscules, sans accents."
             options:
               multiple: true
-              values: [accessibilite, actu-tech, animation, api, architecture, auto-hebergement, backend, blog, carriere, collaboration, communaute, conventions, css, cybersecurite, dataviz, design, design-system, design-tokens, developpement, eco-conception, femmes-tech, git, go, ia, illustration, interface, java, javascript, linux, lisibilite, live-coding, markdown, media, musique, newsletter, nodejs, open-source, pedagogie, personnalite, php, podcast, presentation, qualite-architecture, recherche, site-statique, standards, tech-societe, terminal, twitch, typographie, ui, versionnement, video, web, web-components, web-standards]
+              values: [accessibilite, actu-tech, animation, api, architecture, auto-hebergement, backend, bas-niveau, blog, carriere, collaboration, communaute, conventions, css, cybersecurite, dataviz, design, design-system, design-tokens, developpement, eco-conception, femmes-tech, git, go, ia, illustration, interface, java, javascript, jeu-video, linux, lisibilite, live-coding, markdown, media, musique, newsletter, nodejs, open-source, pedagogie, personnalite, php, podcast, presentation, python, qualite-architecture, react, recherche, reseau, rust, site-statique, standards, tech-societe, terminal, twitch, typographie, ui, versionnement, video, web, web-components, web-standards]
       - name: body
         label: Pourquoi conserver ce lien
         type: rich-text

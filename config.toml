@@ -14,13 +14,14 @@ taxonomies = [
 developpement = "Développement"
 design = "Design"
 ressources = "Ressources"
+blog = "Blog"
 francophone = "Francophone"
 
 # Grands dossiers de la vue d'accueil. Un signet peut apparaître dans plusieurs dossiers.
 [[extra.dossiers]]
 slug = "developpement"
 nom = "Développement web"
-tags = ["developpement", "javascript", "css", "web", "web-standards", "web-components", "site-statique", "markdown", "animation"]
+tags = ["developpement", "javascript", "css", "web", "web-standards", "web-components", "site-statique", "markdown", "animation", "react"]
 categories = ["developpement"]
 [[extra.dossiers]]
 slug = "design"
@@ -34,7 +35,7 @@ tags = ["accessibilite", "lisibilite", "typographie", "standards"]
 [[extra.dossiers]]
 slug = "backend"
 nom = "Back-end et langages"
-tags = ["php", "java", "backend", "api", "nodejs", "go", "linux", "terminal"]
+tags = ["php", "java", "backend", "api", "nodejs", "go", "linux", "terminal", "python", "rust", "reseau", "bas-niveau"]
 [[extra.dossiers]]
 slug = "qualite"
 nom = "Qualité, architecture et Git"

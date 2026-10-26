@@ -30,6 +30,7 @@
     --paper-design: light-dark(#e6e0f4, #37324f);
     --paper-dev: light-dark(#dfe8d0, #2e3b28);
     --paper-ressources: light-dark(#dfe6ee, #2b3a49);
+    --paper-blog: light-dark(#f1e2d6, #46352c);
     --tab-h: 1.75rem;
     --content: 72rem;
     --measure: 62ch;
@@ -464,6 +465,7 @@
     --paper-design: var(--bg);
     --paper-dev: var(--bg);
     --paper-ressources: var(--bg);
+    --paper-blog: var(--bg);
     --postit: var(--bg);
     --verre: var(--bg);
     --verre-bord: var(--fg);
@@ -640,6 +642,11 @@
   .languette[data-categorie~="ressources"] {
     --papier: var(--paper-ressources);
   }
+  .fiche[data-categorie~="blog"],
+  .dossier[data-categorie~="blog"],
+  .languette[data-categorie~="blog"] {
+    --papier: var(--paper-blog);
+  }
   .fiche > * + * {
     margin-block-start: var(--space-xs);
   }
@@ -686,6 +693,7 @@
   [data-categorie~="jeu"] { --icone: url("data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 12 12%22%3E%3Cpath d=%22M4.3.8h3.4v3.5h3.5v3.4H7.7v3.5H4.3V7.7H.8V4.3h3.5z%22/%3E%3C/svg%3E"); --icone-affichee: block; }
   [data-categorie~="societe"] { --icone: url("data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 12 12%22%3E%3Ccircle cx=%226%22 cy=%223.2%22 r=%222.2%22/%3E%3Ccircle cx=%222.6%22 cy=%229%22 r=%222.2%22/%3E%3Ccircle cx=%229.4%22 cy=%229%22 r=%222.2%22/%3E%3C/svg%3E"); --icone-affichee: block; }
   [data-categorie~="ressources"] { --icone: url("data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 12 12%22%3E%3Cpath d=%22M1.5 2.5h9M1.5 6h9M1.5 9.5h6%22 fill=%22none%22 stroke=%22%23000%22 stroke-width=%221.6%22 stroke-linecap=%22round%22/%3E%3C/svg%3E"); --icone-affichee: block; }
+  [data-categorie~="blog"] { --icone: url("data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 12 12%22%3E%3Cpath d=%22M1.2 10.8l.9-3.1 6-6 2.2 2.2-6 6zM1.2 10.8h9.6%22 fill=%22none%22 stroke=%22%23000%22 stroke-width=%221.3%22 stroke-linejoin=%22round%22 stroke-linecap=%22round%22/%3E%3C/svg%3E"); --icone-affichee: block; }
   .fiche-onglet a {
     text-decoration: none;
   }
@@ -1221,6 +1229,7 @@
   .mini[data-categorie~="design"] { --papier: var(--paper-design); }
   .mini[data-categorie~="developpement"] { --papier: var(--paper-dev); }
   .mini[data-categorie~="ressources"] { --papier: var(--paper-ressources); }
+  .mini[data-categorie~="blog"] { --papier: var(--paper-blog); }
   .volet {
     margin: auto;
     position: fixed;
